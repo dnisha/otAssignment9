@@ -1,8 +1,11 @@
 #!/bin/bash
-service_name=$2
-operation=$3
 
-if [ "$2" == "daemon-reload" ]
+service_name=$1
+operation=$2
+
+echo "from service manager $service_name $operation"
+
+if [ "$service_name" == "daemon-reload" ]
 then 
 
 systemctl daemon-reload
@@ -10,19 +13,19 @@ echo "System daemon reloaded."
 
 else
 
-case $3 in
+case $operation in
      'start' )
-         systemctl start $service_name
+         sudo systemctl start $service_name
          echo "Service '$service_name' started."   
          ;;
 
      "restart" )
-         systemctl restart $service_name
+         sudo systemctl restart $service_name
          echo "Service '$service_name' restarted."
         ;;  
 
      "stop" )
-         systemctl stop $service_name
+         sudo systemctl stop $service_name
          echo "Service '$service_name' stopped."    
         ;;   
   esac

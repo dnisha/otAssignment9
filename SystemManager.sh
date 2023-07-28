@@ -10,7 +10,7 @@ SYSTEM=""
 FILE=""
 INVENTORY_FILE_NAME=""
 TASK_FILE_NAME=""
-SSH_ALIAS_FILE="ssh-file"
+SSH_ALIAS_FILE="config"
 TEMPLATE_FILE="ssh-alias-template"
 
 while getopts "i:t:" opt; do
@@ -31,7 +31,7 @@ done
 for i in "$@"
 do
   if [ -f $i ]; then
-    echo "The provided argument $i is the file."
+    # echo "The provided argument $i is the file."
     FILE=$i
 
       if [ $i == "inventory_file" ]; then
@@ -45,8 +45,8 @@ done
 my_main () {
     get_file_names ${FILE}
 
-    echo "inventory file name ${INVENTORY_FILE_NAME}"
-    echo "task file name ${TASK_FILE_NAME}"
+    echo "passed ${INVENTORY_FILE_NAME} as inventory file"
+    echo "passed ${TASK_FILE_NAME} as task file"
     register_ssh_connection
     remote_system_calling_with_task
 
@@ -69,13 +69,13 @@ while IFS= read -r line; do
     USER=$(echo "$line" | awk -F ',' '{print $2}')
     PEM_FILE=$(echo "$line" | awk -F ',' '{print $4}')
 
-    echo "server name ${SERVER_NAME} host ${HOST} user ${USER} pem: ${PEM_FILE}"
+  #  echo "server name : ${SERVER_NAME} host : ${HOST} user : ${USER} pem : ${PEM_FILE}"
 
-    if [ -z $(grep "${SERVER_NAME}" "~/.ssh/config") ]; then
+    if grep -q "${SERVER_NAME}" "config"; then
       echo "${SERVER_NAME} credential already exist.."
     else
       create_ssh_connection ${SERVER_NAME} ${HOST} ${USER} ${PEM_FILE} ${TEMPLATE_FILE} ${SSH_ALIAS_FILE}
-    fi
+    fi 
     
 
 
@@ -132,7 +132,6 @@ handle_package_task () {
 
     OPERATION=$(echo $line | awk -F ',' '{print $2}')
     BINARY=$(echo $line | awk -F ',' '{print $3}')
-    echo "operation ${OPERATION} for binary ${BINARY}"
     ssh ${SYSTEM} "bash -s" -- ${OPERATION} ${BINARY} < package.sh  
 }
 
@@ -144,8 +143,6 @@ handle_file_task () {
     OPERATION=$(echo "$line" | awk -F ',' '{print $3}')
     FILE_OR_DIR=$(echo "$line" | awk -F ',' '{print $4}')
     SOURCE=$(echo "$line" | awk -F ',' '{print $3}')
-
-    echo "on file creation func with sustem ${SYSTEM}"
 
     ssh ${SYSTEM} "bash -s" -- ${IS_FILE_OR_DIR} ${OPERATION} ${FILE_OR_DIR} ${SOURCE} < file.sh
 }
@@ -160,7 +157,7 @@ handle_user () {
   attribute=$(echo "$line" | awk -F ',' '{print $4}')
   value=$(echo "$line" | awk -F ',' '{print $5}')
 
-  ssh ${SYSTEM} "bash -s" -- ${task} ${action} ${username} ${attribute} ${value}} < usertask.sh
+  ssh ${SYSTEM} "bash -s" -- ${task} ${action} ${username} ${attribute} ${value} < usertask.sh
 
 }
 
@@ -173,7 +170,7 @@ handle_group () {
   name=$(echo "$line" | awk -F ',' '{print $4}')
   user=$(echo "$line" | awk -F ',' '{print $5}')
 
-  ssh ${SYSTEM} "bash -s" -- ${task} ${action} ${name} ${user}} < grouptask.sh
+  ssh ${SYSTEM} "bash -s" -- ${task} ${action} ${name} ${user} < grouptask.sh
 
 }
 
@@ -184,8 +181,9 @@ handle_service_task () {
   service_name=$(echo "$line" | awk -F ',' '{print $3}')
   operation=$(echo "$line" | awk -F ',' '{print $4}')
 
-  echo "getting system ${SYSTEM} for running services"
-  ssh ${SYSTEM} "bash -s" -- ${service_name} ${operation}} < ManageService.sh 
+  # echo "got system as ${SYSTEM} and service name as $service_name for operation $operation"
+
+  ssh ${SYSTEM} "bash -s" -- ${service_name} ${operation} < manageService.sh 
 }
 
 operations_on_remote () {

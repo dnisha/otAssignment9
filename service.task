@@ -1,8 +1,1 @@
-server1,service,tomcat,start  
-appserver1,service,tomcat,stop
-appserver1,service,daemon-reload
-appserver1,service,tomcat,restart
-server1,service,nginx,start  
-appserver1,service,nginx,stop
-appserver1,service,daemon-reload
-appserver1,service,nginx,restart
+s
