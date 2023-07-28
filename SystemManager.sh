@@ -92,29 +92,31 @@ remote_system_calling_with_task () {
     case ${SYSTEM} in
    "server1")
         echo "calling server1"
-        if [ ${TASK_FILE_NAME} == "package.task" ]; then
-            handle_package_task ${SYSTEM} $line
-        elif [ ${TASK_FILE_NAME} == "task.file" ]; then
-            handle_file_task ${SYSTEM} $line
-        fi
+        operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    "server2")
       echo "calling server2"
+      operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    "server3")
       echo "calling server3"
+      operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
     "webserver1")
       echo "calling webserver1"
+      operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
     "webserver2")
       echo "calling webserver2"
+      operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    "appserver2")
       echo "calling appserver2"
+      operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
     "appserver1")
       echo "calling appserver2"
+      operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    *)
      Default "system doesnot exist"
@@ -146,6 +148,58 @@ handle_file_task () {
     echo "on file creation func with sustem ${SYSTEM}"
 
     ssh ${SYSTEM} "bash -s" -- ${IS_FILE_OR_DIR} ${OPERATION} ${FILE_OR_DIR} ${SOURCE} < file.sh
+}
+
+handle_user () {
+  SYSTEM=$1
+  line=$2
+
+  task=$(echo "$line" | awk -F ',' '{print $2}')
+  action=$(echo "$line" | awk -F ',' '{print $3}')
+  username=$(echo "$line" | awk -F ',' '{print $4}')
+  attribute=$(echo "$line" | awk -F ',' '{print $4}')
+  value=$(echo "$line" | awk -F ',' '{print $5}')
+
+  ssh ${SYSTEM} "bash -s" -- ${task} ${action} ${username} ${attribute} ${value}} < usertask.sh
+
+}
+
+handle_group () {
+  SYSTEM=$1
+  line=$2
+
+  task=$(echo "$line" | awk -F ',' '{print $2}')
+  action=$(echo "$line" | awk -F ',' '{print $3}')
+  name=$(echo "$line" | awk -F ',' '{print $4}')
+  user=$(echo "$line" | awk -F ',' '{print $5}')
+
+  ssh ${SYSTEM} "bash -s" -- ${task} ${action} ${name} ${user}} < grouptask.sh
+
+}
+
+handle_service_task () {
+  SYSTEM=$1
+  line=$2
+
+  service_name=$(echo "$line" | awk -F ',' '{print $3}')
+  operation=$(echo "$line" | awk -F ',' '{print $4}')
+
+  echo "getting system ${SYSTEM} for running services"
+  ssh ${SYSTEM} "bash -s" -- ${service_name} ${operation}} < ManageService.sh 
+}
+
+operations_on_remote () {
+  if [ ${TASK_FILE_NAME} == "package.task" ]; then
+    handle_package_task ${SYSTEM} $line
+  elif [ ${TASK_FILE_NAME} == "task.file" ]; then
+    handle_file_task ${SYSTEM} $line
+  elif [ ${TASK_FILE_NAME} == "user.task" ]; then
+    handle_user ${SYSTEM} $line
+  elif [ ${TASK_FILE_NAME} == "group.task" ]; then
+    handle_group ${SYSTEM} $line
+  elif [ ${TASK_FILE_NAME} == "service.task" ]; then
+    handle_service_task ${SYSTEM} $line
+  fi
 }
 
 my_main

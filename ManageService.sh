@@ -10,9 +10,7 @@ echo "System daemon reloaded."
 
 else
 
-
-
-  case $3 in
+case $3 in
      'start' )
          systemctl start $service_name
          echo "Service '$service_name' started."   
