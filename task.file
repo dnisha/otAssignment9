@@ -2,4 +2,4 @@ server1,file,create,/opt/file.txt
 server2,file,delete,/opt/file.txt 
 server1,directory,create,/opt/dir1 
 server2,directory,delete,/opt/dir1
-server1,copy,/tmp/deepak,/opt/
+server1,copy,config,/opt/

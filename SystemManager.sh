@@ -72,7 +72,7 @@ while IFS= read -r line; do
   #  echo "server name : ${SERVER_NAME} host : ${HOST} user : ${USER} pem : ${PEM_FILE}"
 
     if grep -q "${SERVER_NAME}" "config"; then
-      echo "${SERVER_NAME} credential already exist.."
+      # echo "${SERVER_NAME} credential already exist.."
     else
       create_ssh_connection ${SERVER_NAME} ${HOST} ${USER} ${PEM_FILE} ${TEMPLATE_FILE} ${SSH_ALIAS_FILE}
     fi 
@@ -91,31 +91,31 @@ remote_system_calling_with_task () {
 
     case ${SYSTEM} in
    "server1")
-        echo "calling server1"
+        # echo "calling server1"
         operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    "server2")
-      echo "calling server2"
+      # echo "calling server2"
       operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    "server3")
-      echo "calling server3"
+      # echo "calling server3"
       operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
     "webserver1")
-      echo "calling webserver1"
+      # echo "calling webserver1"
       operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
     "webserver2")
-      echo "calling webserver2"
+      # echo "calling webserver2"
       operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    "appserver2")
-      echo "calling appserver2"
+      # echo "calling appserver2"
       operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
     "appserver1")
-      echo "calling appserver2"
+      # echo "calling appserver2"
       operations_on_remote ${TASK_FILE_NAME} ${SYSTEM} $line
       ;;
    *)
@@ -143,6 +143,10 @@ handle_file_task () {
     OPERATION=$(echo "$line" | awk -F ',' '{print $3}')
     FILE_OR_DIR=$(echo "$line" | awk -F ',' '{print $4}')
     SOURCE=$(echo "$line" | awk -F ',' '{print $3}')
+
+    if [ $IS_FILE_OR_DIR == "copy" ]; then
+      scp $SOURCE $SYSTEM:$FILE_OR_DIR
+    fi
 
     ssh ${SYSTEM} "bash -s" -- ${IS_FILE_OR_DIR} ${OPERATION} ${FILE_OR_DIR} ${SOURCE} < file.sh
 }
