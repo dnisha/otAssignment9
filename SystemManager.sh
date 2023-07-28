@@ -72,7 +72,7 @@ while IFS= read -r line; do
   #  echo "server name : ${SERVER_NAME} host : ${HOST} user : ${USER} pem : ${PEM_FILE}"
 
     if grep -q "${SERVER_NAME}" "config"; then
-      # echo "${SERVER_NAME} credential already exist.."
+      echo "skiping server registration for ${SERVER_NAME}"
     else
       create_ssh_connection ${SERVER_NAME} ${HOST} ${USER} ${PEM_FILE} ${TEMPLATE_FILE} ${SSH_ALIAS_FILE}
     fi 
