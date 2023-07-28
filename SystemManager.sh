@@ -46,11 +46,11 @@ my_main () {
 
     echo "inventory file name ${INVENTORY_FILE_NAME}"
     echo "task file name ${TASK_FILE_NAME}"
-    read_file ${INVENTORY_FILE}
+    remote_system_calling_with_task
     #cat $INVENTORY_FILE
     #cat $TASK_FILE
-    return
 }
+
 get_file_names () {
 
   if [ ${FILE} == "inventory_file" ]; then
@@ -60,17 +60,17 @@ get_file_names () {
   fi
 }
 
-read_file () {
+register_ssh_connection () {
 
 while IFS= read -r line; do
-   SERVER_NAME=$(echo "$line" | awk -F ',' '{print $1}')
-   HOST=$(echo "$line" | awk -F ',' '{print $3}')
-   USER=$(echo "$line" | awk -F ',' '{print $2}')
-   PEM_FILE=$(echo "$line" | awk -F ',' '{print $4}')
+    SERVER_NAME=$(echo "$line" | awk -F ',' '{print $1}')
+    HOST=$(echo "$line" | awk -F ',' '{print $3}')
+    USER=$(echo "$line" | awk -F ',' '{print $2}')
+    PEM_FILE=$(echo "$line" | awk -F ',' '{print $4}')
 
     echo "server name ${SERVER_NAME} host ${HOST} user ${USER} pem: ${PEM_FILE}"
     create_ssh_connection ${SERVER_NAME} ${HOST} ${USER} ${PEM_FILE} ${TEMPLATE_FILE} ${SSH_ALIAS_FILE}
-  #echo "line are $line"
+
 
   done <${INVENTORY_FILE}
 
@@ -78,9 +78,14 @@ while IFS= read -r line; do
 
 remote_system_calling_with_task () {
 
+    while IFS= read -r line; do
+
+    SYSTEM=$(echo $line | awk -F ',' '{print $1}')
+    echo "found system for operation as : ${SYSTEM}"
      case ${SYSTEM} in
    "server1")
       echo "calling server1"
+    #   ssh user@remote_host "bash -s" -- < package_operation.sh arg1 arg2 arg3
       ;;
    "server2")
       echo "calling server2"
@@ -91,13 +96,32 @@ remote_system_calling_with_task () {
     "webserver1")
       echo "calling webserver1"
       ;;
+    "webserver2")
+      echo "calling webserver2"
+      ;;
    "appserver2")
+      echo "calling appserver2"
+      ;;
+    "appserver1")
       echo "calling appserver2"
       ;;
    *)
      Default "system doesnot exist"
      ;;
-esac
+    esac
+
+    done <${INVENTORY_FILE}
+}
+
+handle_task () {
+
+    case ${TASK_FILE_NAME} in
+    "package.task  ")
+      
+        package_operation ${TASK_FILE}
+
+      ;;
+    esac
 }
 
 my_main

@@ -5,3 +5,4 @@ webserver1,ubuntu,10.0.0.2,~/web.pem
 webserver2,ubuntu,10.0.0.3,~/web.pem
 appserver1,ubuntu,10.0.0.4,~/app.pem
 appserver2,ubuntu,10.0.0.5,~/app.pem
+
