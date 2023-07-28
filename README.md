@@ -120,3 +120,6 @@ TomcatTaskfile example
     appserver2,deploy,sorucepath/*.war,/opt/tomcat/webapps/
     appserver2,service,tomcat,restart
 ```
+
+
+ssh user@remote_host 'bash -s' < your_script.sh

@@ -1,0 +1,5 @@
+server1,user,create,neha  
+server1,user,create,nitish 
+server1,user,modify,group,devops,nitish
+server1,user,modify,shell,/bin/bash,nitish
+server1,user,delete,neha
