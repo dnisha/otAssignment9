@@ -1,0 +1,4 @@
+Host server_name
+    HostName hostIP
+    User remote_user
+    IdentityFile pem_file

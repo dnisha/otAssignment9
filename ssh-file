@@ -1,0 +1,24 @@
+Host server1
+    HostName 10.0.0.1IP
+    User ubuntu
+    IdentityFile ~/server1.pem
+Host server2
+    HostName 10.0.0.6IP
+    User ubuntu
+    IdentityFile ~/server2.pem
+Host server3
+    HostName 10.0.0.7IP
+    User ubuntu
+    IdentityFile ~/server2.pem
+Host webserver1
+    HostName 10.0.0.2IP
+    User ubuntu
+    IdentityFile ~/web.pem
+Host webserver2
+    HostName 10.0.0.3IP
+    User ubuntu
+    IdentityFile ~/web.pem
+Host appserver1
+    HostName 10.0.0.4IP
+    User ubuntu
+    IdentityFile ~/app.pem
