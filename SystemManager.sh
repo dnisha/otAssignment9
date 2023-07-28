@@ -3,7 +3,6 @@
 source ./package.sh
 source ./register-server.sh
 source ./file.sh
-source ./demo.sh
 
 INVENTORY_FILE=""
 TASK_FILE=""
@@ -71,7 +70,13 @@ while IFS= read -r line; do
     PEM_FILE=$(echo "$line" | awk -F ',' '{print $4}')
 
     echo "server name ${SERVER_NAME} host ${HOST} user ${USER} pem: ${PEM_FILE}"
-    create_ssh_connection ${SERVER_NAME} ${HOST} ${USER} ${PEM_FILE} ${TEMPLATE_FILE} ${SSH_ALIAS_FILE}
+
+    if [ -z $(grep "${SERVER_NAME}" "~/.ssh/config") ]; then
+      echo "${SERVER_NAME} credential already exist.."
+    else
+      create_ssh_connection ${SERVER_NAME} ${HOST} ${USER} ${PEM_FILE} ${TEMPLATE_FILE} ${SSH_ALIAS_FILE}
+    fi
+    
 
 
   done <${INVENTORY_FILE}
