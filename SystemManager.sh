@@ -46,9 +46,9 @@ my_main () {
 
     echo "inventory file name ${INVENTORY_FILE_NAME}"
     echo "task file name ${TASK_FILE_NAME}"
+    register_ssh_connection
     remote_system_calling_with_task
-    #cat $INVENTORY_FILE
-    #cat $TASK_FILE
+
 }
 
 get_file_names () {
@@ -81,11 +81,13 @@ remote_system_calling_with_task () {
     while IFS= read -r line; do
 
     SYSTEM=$(echo $line | awk -F ',' '{print $1}')
-    echo "found system for operation as : ${SYSTEM}"
-     case ${SYSTEM} in
+
+    case ${SYSTEM} in
    "server1")
-      echo "calling server1"
-    #   ssh user@remote_host "bash -s" -- < package_operation.sh arg1 arg2 arg3
+
+        if [ ${TASK_FILE_NAME} == "package.task" ]; then
+            handle_package_task ${SYSTEM} $line
+        fi
       ;;
    "server2")
       echo "calling server2"
@@ -110,18 +112,17 @@ remote_system_calling_with_task () {
      ;;
     esac
 
-    done <${INVENTORY_FILE}
+    done <${TASK_FILE}
 }
 
-handle_task () {
+handle_package_task () {
 
-    case ${TASK_FILE_NAME} in
-    "package.task  ")
-      
-        package_operation ${TASK_FILE}
-
-      ;;
-    esac
+    OPERATION=$(echo $line | awk -F ',' '{print $2}')
+    BINARY=$(echo $line | awk -F ',' '{print $3}')
+    echo "operation ${OPERATION} for binary ${BINARY}"
+    ssh ${SYSTEM} "bash -s" < package.sh ${OPERATION} ${BINARY} 
 }
+
+
 
 my_main
