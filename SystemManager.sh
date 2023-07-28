@@ -1,13 +1,19 @@
 #!/bin/bash
 
+source ./package.sh
+
 INVENTORY_FILE=""
 TASK_FILE=""
 SYSTEM=""
+FILE=""
+INVENTORY_FILE_NAME=""
+TASK_FILE_NAME=""
 
 while getopts "i:t:" opt; do
   case $opt in
     i)
       INVENTORY_FILE=$OPTARG
+      file=$2
       ;;
     t)
       TASK_FILE=$OPTARG
@@ -18,10 +24,37 @@ while getopts "i:t:" opt; do
   esac
 done
 
-main () {
+for i in "$@"
+do
+  if [ -f $i ]; then
+    echo "The provided argument $i is the file."
+    FILE=$i
+                
+      if [ $i == "inventory_file" ]; then
+        INVENTORY_FILE_NAME=${FILE}
+      else
+        TASK_FILE_NAME=${FILE}
+      fi
+  fi
+done
 
+main () {
+    get_file_names ${FILE}
+
+    echo "inventory file name ${INVENTORY_FILE_NAME}"
+    echo "inventory file name ${TASK_FILE_NAME}"
     cat $INVENTORY_FILE
     cat $TASK_FILE
+
+}
+
+get_file_names () {
+
+  if [ ${FILE} == "inventory_file" ]; then
+    INVENTORY_FILE_NAME=${FILE}
+  else
+    TASK_FILE_NAME=${FILE}
+  fi
 }
 
 remote_system_calling_with_task () {
