@@ -2,6 +2,8 @@
 
 source ./package.sh
 source ./register-server.sh
+source ./file.sh
+source ./demo.sh
 
 INVENTORY_FILE=""
 TASK_FILE=""
@@ -84,9 +86,11 @@ remote_system_calling_with_task () {
 
     case ${SYSTEM} in
    "server1")
-
+        echo "calling server1"
         if [ ${TASK_FILE_NAME} == "package.task" ]; then
             handle_package_task ${SYSTEM} $line
+        elif [ ${TASK_FILE_NAME} == "task.file" ]; then
+            handle_file_task ${SYSTEM} $line
         fi
       ;;
    "server2")
@@ -116,13 +120,27 @@ remote_system_calling_with_task () {
 }
 
 handle_package_task () {
+    SYSTEM=$1
+    line=$2
 
     OPERATION=$(echo $line | awk -F ',' '{print $2}')
     BINARY=$(echo $line | awk -F ',' '{print $3}')
     echo "operation ${OPERATION} for binary ${BINARY}"
-    ssh ${SYSTEM} "bash -s" < package.sh ${OPERATION} ${BINARY} 
+    ssh ${SYSTEM} "bash -s" -- ${OPERATION} ${BINARY} < package.sh  
 }
 
+handle_file_task () {
+    SYSTEM=$1
+    line=$2
 
+    IS_FILE_OR_DIR=$(echo "$line" | awk -F ',' '{print $2}')
+    OPERATION=$(echo "$line" | awk -F ',' '{print $3}')
+    FILE_OR_DIR=$(echo "$line" | awk -F ',' '{print $4}')
+    SOURCE=$(echo "$line" | awk -F ',' '{print $3}')
+
+    echo "on file creation func with sustem ${SYSTEM}"
+
+    ssh ${SYSTEM} "bash -s" -- ${IS_FILE_OR_DIR} ${OPERATION} ${FILE_OR_DIR} ${SOURCE} < file.sh
+}
 
 my_main
